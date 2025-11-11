@@ -2,10 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,12 +14,22 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // 1. Seeders sem dependências ou dependências de nível mais alto
+        $this->call([
+            UserSeeder::class,
+            ClienteSeeder::class,
+            ServicoSeeder::class,
+        ]);
 
-        User::factory()->create([
-            'name' => 'Teste Master',
-            'email' => 'testmaster@example.com',
-            'password' => Hash::make('master123'),
+        // 2. Seeders que dependem das anteriores
+        $this->call([
+            OrdemSeeder::class, // Depende de User (se usar) e Cliente
+        ]);
+
+        // 3. Seeders que dependem das anteriores (e da OrdemSeeder)
+        $this->call([
+            OrdemDeServicoSeeder::class, // Depende de Servico e Ordem
+            PagamentoSeeder::class,      // Depende de Ordem
         ]);
     }
 }
