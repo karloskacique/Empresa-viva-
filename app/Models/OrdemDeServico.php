@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class OrdemDeServico extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'ordem_de_servicos'; // Nome da tabela
-    
+
     protected $fillable = [
         'servico_id',
         'ordem_id',

@@ -4,8 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -14,18 +13,18 @@ return new class extends Migration
         Schema::create('ordens', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')
-				->unsigned()
-				->nullable();
-			$table->foreign('user_id')
-				->references('id')
-				->on('users')
+                ->unsigned()
+                ->nullable();
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
                 ->onDelete('set null');
             $table->bigInteger('cliente_id')
-				->unsigned()
-				->nullable();
-			$table->foreign('cliente_id')
-				->references('id')
-				->on('clientes')
+                ->unsigned()
+                ->nullable();
+            $table->foreign('cliente_id')
+                ->references('id')
+                ->on('clientes')
                 ->onDelete('cascade');
             $table->double('total', 16, 2)
                 ->comment('Valor total dos serviços.')
@@ -40,18 +39,18 @@ return new class extends Migration
         Schema::create('ordem_de_servicos', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('servico_id')
-				->unsigned()
-				->nullable();
-			$table->foreign('servico_id')
-				->references('id')
-				->on('servicos')
+                ->unsigned()
+                ->nullable();
+            $table->foreign('servico_id')
+                ->references('id')
+                ->on('servicos')
                 ->onDelete('cascade');
             $table->bigInteger('ordem_id')
-				->unsigned()
-				->nullable();
-			$table->foreign('ordem_id')
-				->references('id')
-				->on('ordens')
+                ->unsigned()
+                ->nullable();
+            $table->foreign('ordem_id')
+                ->references('id')
+                ->on('ordens')
                 ->onDelete('cascade');
             $table->softDeletes();
             $table->timestamps();

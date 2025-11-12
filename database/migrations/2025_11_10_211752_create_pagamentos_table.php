@@ -4,8 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -14,19 +13,19 @@ return new class extends Migration
         Schema::create('pagamentos', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('ordem_id')
-				->unsigned()
-				->nullable();
-			$table->foreign('ordem_id')
-				->references('id')
-				->on('ordens')
-				->onDelete('set null')
-				->onUpdate('set null');
+                ->unsigned()
+                ->nullable();
+            $table->foreign('ordem_id')
+                ->references('id')
+                ->on('ordens')
+                ->onDelete('set null')
+                ->onUpdate('set null');
             $table->enum('forma_de_pagamento', [
-				'debito',
-				'credito',
-				'pix',
-			])
-				->default('credito');
+                'debito',
+                'credito',
+                'pix',
+            ])
+                ->default('credito');
             $table->dateTime('data_pagamento')
                 ->nullable();
             $table->timestamps();
@@ -39,6 +38,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        //desabilitando as chaves estrangeiras:
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('pagamentos');
+        //habilitando as chaves:
+        Schema::enableForeignKeyConstraints();
     }
 };

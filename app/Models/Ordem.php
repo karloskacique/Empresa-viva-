@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Ordem extends Model
 {
+    use HasFactory;
+    use SoftDeletes;
     protected $table = "ordens";
-
-    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'user_id',
