@@ -6,12 +6,15 @@ import {
     faUsers,
     faClipboardList,
     faWrench,
-    faUserShield
+    faUserShield,
+    faSun,
+    faMoon
 } from '@fortawesome/free-solid-svg-icons';
 import ApplicationLogo from './ApplicationLogo';
 
-export default function Sidebar({ sidebarOpen, setSidebarOpen, userRole }) {
-    const isAdmin = userRole === 'admin'; 
+export default function Sidebar({ sidebarOpen, setSidebarOpen, userRole, theme, toggleTheme }) {
+    const isAdmin = userRole === 'admin';
+
     const navItems = [
         { name: 'Home', href: route('dashboard'), icon: faHome, active: route().current('dashboard') },
         { name: 'Clientes', href: route('clientes.index'), icon: faUsers, active: route().current('clientes.*') },
@@ -22,16 +25,15 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, userRole }) {
 
     return (
         <div
-            className={`flex flex-col bg-gray-800 text-white transition-all duration-300 ${
+        
+            className={`flex flex-col h-screen bg-gray-800 dark:bg-gray-900 text-white transition-all duration-300 ${
                 sidebarOpen ? 'w-64' : 'w-20'
-            } min-h-screen relative`}
+            } min-h-screen relative overflow-y-auto`}
         >
-            <div className="flex items-center justify-between h-16 px-4 bg-gray-900">
+            <div className="flex items-center justify-between h-16 px-4 bg-gray-900 dark:bg-gray-800 shrink-0">
                 {sidebarOpen ? (
-                    <Link href="/" className="flex items-center shrink-0 space-x-2">
-                        <div>
-                            <ApplicationLogo className="block h-10 w-auto fill-current text-gray-800" />
-                        </div>
+                    <Link href="/" className="flex items-center space-x-2">
+                        <ApplicationLogo className="block h-9 w-auto fill-current text-white" />
                         <span className="text-xl font-semibold">Empresa Viva</span>
                     </Link>
                 ) : (
@@ -41,7 +43,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, userRole }) {
                 )}
                 <button
                     onClick={() => setSidebarOpen(!sidebarOpen)}
-                    className="p-2 rounded-full hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
+                    className="p-2 rounded-full hover:bg-gray-700 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 dark:focus:ring-offset-gray-900 focus:ring-white"
                 >
                     <svg
                         className="h-6 w-6 text-white"
@@ -74,9 +76,21 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, userRole }) {
                     <NavLinkItem key={item.name} item={item} sidebarOpen={sidebarOpen} />
                 ))}
             </nav>
+        
+            <div className={`px-4 py-3 border-t border-gray-700 dark:border-gray-700 flex items-center justify-between transition-all duration-300 ${sidebarOpen ? '' : 'justify-center'}`}>
+                {sidebarOpen && (
+                    <span className="text-sm text-gray-400">Tema: {theme === 'dark' ? 'Escuro' : 'Claro'}</span>
+                )}
+                <button
+                    onClick={toggleTheme}
+                    className="p-2 rounded-full text-gray-400 hover:bg-gray-700 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 dark:focus:ring-offset-gray-900 focus:ring-white"
+                >
+                    <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} className="h-5 w-5" />
+                </button>
+            </div>
 
             {sidebarOpen && (
-                <div className="px-4 py-3 text-sm text-gray-400 border-t border-gray-700">
+                <div className="px-4 py-3 text-sm text-gray-400 border-t border-gray-700 dark:border-gray-700">
                     &copy; {new Date().getFullYear()} Empresa Viva
                 </div>
             )}
@@ -85,8 +99,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, userRole }) {
 }
 
 function NavLinkItem({ item, sidebarOpen }) {
-    const activeClasses = 'bg-gray-900 text-white';
-    const inactiveClasses = 'text-gray-300 hover:bg-gray-700 hover:text-white';
+    const activeClasses = 'bg-gray-900 dark:bg-gray-700 text-white';
+    const inactiveClasses = 'text-gray-300 hover:bg-gray-700 dark:hover:bg-gray-600 hover:text-white';
 
     return (
         <Link

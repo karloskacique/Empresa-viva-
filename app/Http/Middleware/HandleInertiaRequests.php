@@ -2,8 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Illuminate\Http\Request;
+use Tightenco\Ziggy\BladeRouteGenerator;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -42,6 +43,11 @@ class HandleInertiaRequests extends Middleware
             'email' => $request->user()->email,
             'role' => $request->user()->role ?? null,
         ] : null,
+        'flash' => [
+            'success' => $request->session()->get('success'),
+            'error' => $request->session()->get('error'),
+            'message' => $request->session()->get('message'),
+        ],
     ]);
     }
 }
