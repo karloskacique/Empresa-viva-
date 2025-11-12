@@ -1,7 +1,11 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
+import StatCard from '@/Components/StatCard'; // Importe o novo componente de Card
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUsers, faWrench, faClipboardList } from '@fortawesome/free-solid-svg-icons';
 
-export default function Dashboard() {
+// A página Dashboard agora receberá 'counts' como uma prop do Laravel
+export default function Dashboard({ counts }) { 
     return (
         <AuthenticatedLayout
             header={
@@ -14,9 +18,31 @@ export default function Dashboard() {
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                    {/* Container para os cards */}
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        <StatCard
+                            title="Total de Clientes"
+                            value={counts.clientes}
+                            icon={faUsers}
+                            bgColor="bg-blue-500"
+                        />
+                        <StatCard
+                            title="Total de Serviços"
+                            value={counts.servicos}
+                            icon={faWrench}
+                            bgColor="bg-green-500"
+                        />
+                        <StatCard
+                            title="Total de Ordens"
+                            value={counts.ordens}
+                            icon={faClipboardList}
+                            bgColor="bg-yellow-500"
+                        />
+                    </div>
+
+                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg mt-8">
                         <div className="p-6 text-gray-900">
-                            You're logged in!
+                            Bem-vindo de volta, {usePage().props.auth.user.name}!
                         </div>
                     </div>
                 </div>
