@@ -36,4 +36,9 @@ class Servico extends Model
      * @var array
      */
     protected $dates = ['deleted_at'];
+
+    public function ordens()
+    {
+        return $this->belongsToMany(Ordem::class, 'ordem_de_servicos', 'servico_id', 'ordem_id');
+    }
 }

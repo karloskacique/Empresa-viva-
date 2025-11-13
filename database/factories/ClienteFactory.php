@@ -20,16 +20,16 @@ class ClienteFactory extends Factory
     public function definition(): array
     {
         $sexo = $this->faker->randomElement(['M', 'F']);
-        $cpf = $this->faker->unique()->numerify('###########'); // 11 dígitos
+        $cpf = $this->faker->unique()->numerify('###########');
 
         return [
             'nome' => $this->faker->name($sexo == 'M' ? 'male' : 'female'),
             'email' => $this->faker->unique()->safeEmail(),
             'cpf' => $cpf,
-            'telefone' => $this->faker->numerify('##########'), // 10 dígitos (ex: "9912345678") ou ajustar para 11/12 conforme sua necessidade.
+            'telefone' => $this->faker->numerify('##########'),
             'sexo' => $sexo,
-            'image' => null, // Deixamos nulo ou você pode usar $this->faker->imageUrl() se quiser imagens fake
-            'ativo' => $this->faker->boolean(90), // 90% de chance de ser true
+            'image' => null,
+            'ativo' => $this->faker->boolean(90),
         ];
     }
 

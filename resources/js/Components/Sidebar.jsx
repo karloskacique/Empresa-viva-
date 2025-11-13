@@ -25,13 +25,24 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, user, theme, togg
     const { auth } = usePage().props;
 
     const canManageUsers = auth.user?.permissions?.includes('manage users');
+    const canViewDashboard = auth.user?.permissions?.includes('view dashboard');
+    const canManageClients = auth.user?.permissions?.includes('manage clients');
+    const canManageServices = auth.user?.permissions?.includes('manage services');
+    const canViewOrdens = auth.user?.permissions?.includes('view ordens');
 
-    const navItems = [
-        { name: 'Dashboard', href: route('dashboard'), icon: faHome, active: route().current('dashboard') },
-        { name: 'Clientes', href: route('clientes.index'), icon: faUsers, active: route().current('clientes.*') },
-        { name: 'Serviços', href: route('servicos.index'), icon: faWrench, active: route().current('servicos.*') },
-        { name: 'Ordens', href: route('ordens.index'), icon: faClipboardList, active: route().current('ordens.*') }
-    ];
+    const navItems = [];
+    if (canViewDashboard) {
+        navItems.push({ name: 'Dashboard', href: route('dashboard'), icon: faHome, active: route().current('dashboard') });
+    }
+    if (canManageClients) {
+        navItems.push({ name: 'Clientes', href: route('clientes.index'), icon: faUsers, active: route().current('clientes.*') });
+    }
+    if (canManageServices) {
+        navItems.push({ name: 'Serviços', href: route('servicos.index'), icon: faWrench, active: route().current('servicos.*') });
+    }
+    if (canViewOrdens) {
+        navItems.push({ name: 'Ordens', href: route('ordens.index'), icon: faClipboardList, active: route().current('ordens.*') });
+    }
 
     // if (isAdmin) {
     //     navItems.push({ name: 'Usuários', href: route('users.index'), icon: faUserShield, active: route().current('users.*') });

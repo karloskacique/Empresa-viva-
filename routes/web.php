@@ -2,12 +2,11 @@
 
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Application;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrdemController;
-use App\Http\Controllers\ServicoController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ServicoController;
 use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
@@ -26,6 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('servicos', ServicoController::class);
     Route::resource('ordens', OrdemController::class);
     Route::resource('users', UserController::class);
+    Route::post('ordens/{ordem}/pay', [OrdemController::class, 'storePayment'])->name('ordens.storePayment');
 });
 
 require __DIR__.'/auth.php';

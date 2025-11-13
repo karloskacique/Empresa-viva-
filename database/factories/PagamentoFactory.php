@@ -18,7 +18,8 @@ class PagamentoFactory extends Factory
         return [
             'ordem_id' => Ordem::inRandomOrder()->first()->id ?? Ordem::factory(),
             'forma_de_pagamento' => $this->faker->randomElement(['debito', 'credito', 'pix']),
-            'data_pagamento' => $this->faker->dateTimeBetween('-6 months', 'now'), // Pagamento nos últimos 6 meses
+            'valor' => $this->faker->randomFloat(2, 100, 5000),
+            'data_pagamento' => $this->faker->dateTimeBetween('-6 months', 'now')
         ];
     }
 }

@@ -26,6 +26,7 @@ return new class () extends Migration {
                 'pix',
             ])
                 ->default('credito');
+            $table->double('valor', 16, 2)->default(0);
             $table->dateTime('data_pagamento')
                 ->nullable();
             $table->timestamps();

@@ -27,27 +27,61 @@ class Ordem extends Model
 
     protected $dates = ['deleted_at'];
 
-    // Relacionamento com User
-    public function usuario()
+    // Relacionamento com o usuário que criou/gerencia a ordem
+    public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // Relacionamento com Cliente
+    // Relacionamento com o cliente da ordem
     public function cliente()
     {
         return $this->belongsTo(Cliente::class, 'cliente_id');
     }
 
-    // Relacionamento com OrdemDeServico
-    public function itensServico()
+    // Relacionamento com os serviços através da tabela pivô
+    public function servicos()
     {
-        return $this->hasMany(OrdemDeServico::class, 'ordem_id');
+        return $this->belongsToMany(Servico::class, 'ordem_de_servicos', 'ordem_id', 'servico_id')
+            ->withTimestamps();
     }
 
-    // Relacionamento com Pagamento
+    // Relacionamento com os pagamentos da ordem
     public function pagamentos()
     {
         return $this->hasMany(Pagamento::class, 'ordem_id');
+    }
+
+    // Acessórios (Accessors) para cálculos úteis no frontend
+
+    /**
+     * Get the total amount paid for the order.
+     */
+    public function getTotalPagoAttribute()
+    {
+        return $this->pagamentos()->sum('valor');
+    }
+
+    /**
+     * Get the remaining balance for the order.
+     */
+    public function getSaldoRestanteAttribute()
+    {
+        return $this->total - $this->getTotalPagoAttribute();
+    }
+
+    /**
+     * Get the status class/color for display.
+     */
+    public function getStatusColorAttribute()
+    {
+        return match ($this->status) {
+            'Iniciado' => 'blue',
+            'Em Andamento' => 'yellow',
+            'Concluído' => 'green',
+            'Cancelado' => 'red',
+            'Aguardando Pagamento' => 'orange',
+            default => 'gray',
+        };
     }
 }

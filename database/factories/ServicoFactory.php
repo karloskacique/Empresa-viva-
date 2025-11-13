@@ -25,8 +25,8 @@ class ServicoFactory extends Factory
     public function definition(): array
     {
         return [
-            'descricao' => $this->faker->sentence(mt_rand(3, 7)), // Uma frase aleatória para a descrição do serviço
-            'valor' => $this->faker->randomFloat(2, 50, 1500), // Valor entre 50.00 e 1500.00 com 2 casas decimais
+            'descricao' => $this->faker->sentence(mt_rand(3, 7)),
+            'valor' => $this->faker->randomFloat(2, 50, 1500),
         ];
     }
 }

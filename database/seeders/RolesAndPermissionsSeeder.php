@@ -17,10 +17,19 @@ class RolesAndPermissionsSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         Permission::firstOrCreate(['name' => 'manage users']);
+        Permission::firstOrCreate(['name' => 'manage clients']);
+        Permission::firstOrCreate(['name' => 'manage services']);
         Permission::firstOrCreate(['name' => 'view dashboard']);
-        // Permission::firstOrCreate(['name' => 'edit clients']);
-        // Permission::firstOrCreate(['name' => 'delete clients']);
-        // Permission::firstOrCreate(['name' => 'create orders']);
+        Permission::firstOrCreate(['name' => 'edit clients']);
+        Permission::firstOrCreate(['name' => 'delete clients']);
+        Permission::firstOrCreate(['name' => 'create orders']);
+
+        // NOVAS Permissões para Ordens
+        Permission::firstOrCreate(['name' => 'view ordens']);
+        Permission::firstOrCreate(['name' => 'create ordens']);
+        Permission::firstOrCreate(['name' => 'edit ordens']);
+        Permission::firstOrCreate(['name' => 'delete ordens']);
+        Permission::firstOrCreate(['name' => 'pay ordens']);
 
         // Role 'admin'
         $adminRole = Role::firstOrCreate(['name' => 'admin']);

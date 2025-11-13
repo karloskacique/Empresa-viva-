@@ -33,4 +33,9 @@ class Cliente extends Model
     protected $casts = [
         'ativo' => 'boolean', // Garante que 'ativo' seja um booleano
     ];
+
+    public function ordens()
+    {
+        return $this->hasMany(Ordem::class, 'cliente_id');
+    }
 }
