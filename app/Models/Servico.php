@@ -27,7 +27,7 @@ class Servico extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'valor' => 'float', // Garante que 'valor' seja tratado como float
+        'valor' => 'decimal:2',
     ];
 
     /**

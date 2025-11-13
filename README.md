@@ -1,5 +1,7 @@
 ## Empresa Viva
-[Autor Carlos Eduardo Freitas Cacique](https://www.linkedin.com/in/carlos-eduardo-90762a209/)
+<a href="https://www.linkedin.com/in/carlos-eduardo-90762a209/" target="_blank">Autor Carlos Eduardo Freitas Cacique</a>
+
+<!-- [Autor Carlos Eduardo Freitas Cacique](https://www.linkedin.com/in/carlos-eduardo-90762a209/){:target="_blank"} -->
 
 - Projeto desenvolvido na PIT I, foram realizadas atualizações e melhorias com o objetivo de otimizar o desempenho do sistema e torna-lo mais funcional para pequenas empresas prestadoras de serviços.
 
@@ -25,6 +27,12 @@ php artisan migrate
 > OBS.: Caso queira usar dados mocados de teste, pode rodar direto com as seeders:
 ```Bash
 php artisan migrate --seed
+```
+
+- O usuário de teste é:
+```
+email: testmaster@example.com
+password: master123
 ```
 
 - Dar permissoes nas pastas para uso e salvar imagens localmente:
