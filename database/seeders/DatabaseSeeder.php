@@ -14,22 +14,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Seeders sem dependências ou dependências de nível mais alto
+        
         $this->call([
+            RolesAndPermissionsSeeder::class,
             UserSeeder::class,
             ClienteSeeder::class,
             ServicoSeeder::class,
         ]);
 
-        // 2. Seeders que dependem das anteriores
         $this->call([
-            OrdemSeeder::class, // Depende de User (se usar) e Cliente
+            OrdemSeeder::class,
         ]);
 
-        // 3. Seeders que dependem das anteriores (e da OrdemSeeder)
         $this->call([
-            OrdemDeServicoSeeder::class, // Depende de Servico e Ordem
-            PagamentoSeeder::class,      // Depende de Ordem
+            OrdemDeServicoSeeder::class,
+            PagamentoSeeder::class, 
         ]);
     }
 }

@@ -18,9 +18,13 @@ import {
 import ApplicationLogo from './ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
+import { usePage } from '@inertiajs/react';
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen, user, theme, toggleTheme }) {
-    const isAdmin = user.role === 'admin';
+    // const isAdmin = user.role === 'admin';
+    const { auth } = usePage().props;
+
+    const canManageUsers = auth.user?.permissions?.includes('manage users');
 
     const navItems = [
         { name: 'Dashboard', href: route('dashboard'), icon: faHome, active: route().current('dashboard') },
@@ -29,7 +33,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, user, theme, togg
         { name: 'Ordens', href: route('ordens.index'), icon: faClipboardList, active: route().current('ordens.*') }
     ];
 
-    if (isAdmin) {
+    // if (isAdmin) {
+    //     navItems.push({ name: 'Usuários', href: route('users.index'), icon: faUserShield, active: route().current('users.*') });
+    // }
+    if (canManageUsers) {
         navItems.push({ name: 'Usuários', href: route('users.index'), icon: faUserShield, active: route().current('users.*') });
     }
 

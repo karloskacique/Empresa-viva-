@@ -25,7 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('clientes', ClienteController::class);
     Route::resource('servicos', ServicoController::class);
     Route::resource('ordens', OrdemController::class);
-    Route::resource('users', UserController::class)->middleware(['can:view-users']);
+    Route::resource('users', UserController::class);
 });
 
 require __DIR__.'/auth.php';
