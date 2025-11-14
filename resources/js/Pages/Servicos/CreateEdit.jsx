@@ -1,23 +1,21 @@
-// resources/js/Pages/Servicos/CreateEdit.jsx
-
 import React, { useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput'; // Ainda usado para outros campos, mas não para 'valor'
+import TextInput from '@/Components/TextInput';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import SecondaryButton from '@/Components/SecondaryButton';
-import { NumericFormat } from 'react-number-format'; // <<<< Importar NumericFormat
+import { NumericFormat } from 'react-number-format';
 
 export default function ServicoCreateEdit({ auth, servico }) {
     const isEditMode = !!servico;
 
     const { data, setData, post, put, processing, errors, reset } = useForm({
         descricao: servico?.descricao || '',
-        valor: servico?.valor || '0.00', // Manter como string no formato com ponto para consistência inicial
+        valor: servico?.valor || '0.00',
         _method: isEditMode ? 'put' : undefined,
     });
 
@@ -25,23 +23,17 @@ export default function ServicoCreateEdit({ auth, servico }) {
         if (isEditMode) {
             setData({
                 descricao: servico.descricao,
-                // O NumericFormat trabalhará com o valor como string,
-                // mas espera um formato com ponto (ex: "123.45") para exibição.
-                // servico.valor já deve vir assim do backend (decimal:2).
                 valor: servico.valor ? parseFloat(servico.valor).toFixed(2) : '0.00',
                 _method: 'put',
             });
         } else {
             reset();
-            setData('valor', '0.00'); // Valor inicial para novo serviço
+            setData('valor', '0.00');
         }
     }, [servico]);
 
     const submit = (e) => {
-        e.preventDefault();
-
-        // O 'valor' já estará no formato numérico correto (com ponto) graças ao NumericFormat
-        // Podemos enviar 'data.valor' diretamente, mas vamos garantir que é um float.
+        e.preventDefault();       
         const dataToSend = { ...data, valor: parseFloat(data.valor) };
 
         if (isEditMode) {
@@ -99,14 +91,14 @@ export default function ServicoCreateEdit({ auth, servico }) {
                                         name="valor"
                                         value={data.valor}
                                         onValueChange={(values) => {
-                                            setData('valor', values.value); // values.value é o valor numérico sem formatação (com ponto)
+                                            setData('valor', values.value);
                                         }}
-                                        thousandSeparator="." // Separador de milhares no formato BR (milhares por ponto)
-                                        decimalSeparator="," // Separador decimal no formato BR (decimais por vírgula)
-                                        decimalScale={2} // Duas casas decimais
-                                        fixedDecimalScale // Fixa as duas casas decimais
-                                        prefix="R$ " // Prefixo de moeda
-                                        allowNegative={false} // Não permite valores negativos
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        decimalScale={2}
+                                        fixedDecimalScale
+                                        prefix="R$ "
+                                        allowNegative={false}
                                         className="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
                                         placeholder="R$ 0,00"
                                     />

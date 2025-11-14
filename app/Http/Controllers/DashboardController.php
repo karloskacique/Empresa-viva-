@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
 use App\Models\User;
+use Inertia\Inertia;
 use App\Models\Ordem;
 use Inertia\Response;
 use App\Models\Cliente;

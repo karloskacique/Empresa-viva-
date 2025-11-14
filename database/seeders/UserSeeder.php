@@ -14,23 +14,27 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
+        $admin = User::factory()->create([
            'name' => 'Teste Master',
            'email' => 'testmaster@example.com',
            'password' => Hash::make('master123')
-        ])->assignRole('admin');
+        ]);
+        
+        $admin->assignRole('admin');
         // User::factory(10)->create();
 
         $normalUser = User::where('email', 'user@example.com')->first();
         if ($normalUser) {
             $normalUser->assignRole('user');
         } else {
-            User::factory()->create([
+            $normalUser = User::factory()->create([
                 'email' => 'user@example.com',
                 'name' => 'Normal User',
                 'password' => bcrypt('password'),
                 'email_verified_at' => now(),
-            ])->assignRole('user');
+            ]);
+            
+            $normalUser->assignRole('user');
         }
     }
 }

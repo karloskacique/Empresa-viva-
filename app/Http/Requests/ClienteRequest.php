@@ -16,6 +16,20 @@ class ClienteRequest extends FormRequest
     }
 
     /**
+     * Prepara os dados para validação limpando as máscaras de CPF e Telefone.
+     */
+    protected function prepareForValidation(): void
+    {
+        $cpfLimpo = preg_replace('/\D/', '', $this->cpf);
+        $telefoneLimpo = preg_replace('/\D/', '', $this->telefone);
+
+        $this->merge([
+            'cpf' => $cpfLimpo,
+            'telefone' => $telefoneLimpo,
+        ]);
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
@@ -28,20 +42,25 @@ class ClienteRequest extends FormRequest
             'cpf' => [
                 'required',
                 'string',
-                'size:11',
-                Rule::unique('clientes')->ignore($this->route('cliente')), // Ignora o próprio cliente ao atualizar
+                'digits:11',
+                Rule::unique('clientes')->ignore($this->route('cliente')), 
             ],
-            'telefone' => ['nullable', 'string', 'max:12'],
-            'sexo' => ['required', 'string', Rule::in(['M', 'F', 'O'])], // M, F ou Outro (O)
-            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'], // Max 2MB
+            'telefone' => [
+                'nullable',
+                'string',
+                'min:10',
+                'max:11'
+            ],
+            'sexo' => ['required', 'string', Rule::in(['M', 'F', 'O'])], 
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'], 
             'ativo' => ['boolean'],
-            'remove_image' => ['boolean'], // Para lidar com a remoção da imagem
+            'remove_image' => ['boolean'], 
         ];
 
-        // Se for um POST (create), o email também deve ser único
+        
         if ($this->isMethod('POST')) {
             $rules['email'][] = 'unique:clientes';
-        } else { // Se for PUT/PATCH (update)
+        } else { 
              $rules['email'][] = Rule::unique('clientes')->ignore($this->route('cliente'));
         }
 

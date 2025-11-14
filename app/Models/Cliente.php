@@ -31,7 +31,7 @@ class Cliente extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'ativo' => 'boolean', // Garante que 'ativo' seja um booleano
+        'ativo' => 'boolean',
     ];
 
     public function ordens()

@@ -1,10 +1,9 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, usePage } from '@inertiajs/react';
-import StatCard from '@/Components/StatCard'; // Importe o novo componente de Card
+import StatCard from '@/Components/StatCard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUsers, faWrench, faClipboardList } from '@fortawesome/free-solid-svg-icons';
 
-// A página Dashboard agora receberá 'counts' como uma prop do Laravel
 export default function Dashboard({ counts }) { 
     return (
         <AuthenticatedLayout

@@ -27,19 +27,16 @@ class Ordem extends Model
 
     protected $dates = ['deleted_at'];
 
-    // Relacionamento com o usuário que criou/gerencia a ordem
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // Relacionamento com o cliente da ordem
     public function cliente()
     {
         return $this->belongsTo(Cliente::class, 'cliente_id');
     }
 
-    // Relacionamento com os serviços através da tabela pivô
     public function servicos()
     {
         return $this->belongsToMany(Servico::class, 'ordem_de_servicos', 'ordem_id', 'servico_id')
@@ -48,13 +45,10 @@ class Ordem extends Model
             ->withPivot('deleted_at');
     }
 
-    // Relacionamento com os pagamentos da ordem
     public function pagamentos()
     {
         return $this->hasMany(Pagamento::class, 'ordem_id');
     }
-
-    // Acessórios (Accessors) para cálculos úteis no frontend
 
     /**
      * Get the total amount paid for the order.

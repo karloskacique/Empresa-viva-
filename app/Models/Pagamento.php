@@ -24,7 +24,6 @@ class Pagamento extends Model
 
     protected $dates = ['deleted_at'];
 
-    // Relacionamento com Ordem
     public function ordem()
     {
         return $this->belongsTo(Ordem::class, 'ordem_id');

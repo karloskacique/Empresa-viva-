@@ -4,12 +4,9 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\Ordem;
-use App\Models\Cliente;
 use App\Models\Servico;
-use App\Models\Pagamento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -85,16 +82,15 @@ class OrdemController extends Controller
         })
         ->filter()
         ->toArray();
+        $request->validate([
+            'cliente_id' => 'required|exists:clientes,id',
+            'user_id' => 'required|exists:users,id',
+            'servicos' => 'required|array|min:1',
+            // 'servicos.*' => 'exists:servicos,id',
+            'data' => 'nullable|date',
+            'status' => 'required|string|max:20',
+        ]);
         try {
-            $request->validate([
-                'cliente_id' => 'required|exists:clientes,id',
-                'user_id' => 'required|exists:users,id',
-                'servicos' => 'required|array|min:1',
-                // 'servicos.*' => 'exists:servicos,id',
-                'data' => 'nullable|date',
-                'status' => 'required|string|max:20',
-            ]);
-
             DB::beginTransaction();
             $servicosSelecionados = Servico::whereIn('id', $servicosIds)->get();
             $total = $servicosSelecionados->sum('valor');

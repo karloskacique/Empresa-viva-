@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Foundation\Http\FormRequest;
 
 class UserRequest extends FormRequest
 {
@@ -12,8 +12,7 @@ class UserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // Agora, usamos o método can() do Spatie
-        return $this->user() && $this->user()->can('manage users'); // <<< Usar permissão
+        return $this->user() && $this->user()->can('manage users');
     }
 
     /**
@@ -58,7 +57,6 @@ class UserRequest extends FormRequest
             'password.string' => 'O campo Senha deve ser uma string.',
             'password.min' => 'A Senha deve ter no mínimo :min caracteres.',
             'password.confirmed' => 'A confirmação de Senha não confere.',
-            // Remova as mensagens de erro para 'role' se você removeu a validação acima
         ];
     }
 }

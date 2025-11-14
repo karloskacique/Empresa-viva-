@@ -1,5 +1,3 @@
-// resources/js/Pages/Users/Index.jsx
-
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
@@ -12,7 +10,7 @@ import TextInput from '@/Components/TextInput';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { router } from '@inertiajs/react';
 
-export default function UserIndex({ auth, users, search, roles }) { // Certifique-se de que `roles` está sendo passado aqui, embora não seja estritamente necessário para o Index
+export default function UserIndex({ auth, users, search, roles }) {
     const [expandedRow, setExpandedRow] = useState(null);
     const [confirmingDeletion, setConfirmingDeletion] = useState(false);
     const [userToDelete, setUserToDelete] = useState(null);

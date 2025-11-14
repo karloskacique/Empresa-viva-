@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use App\Http\Requests\ClienteRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
 
 class ClienteController extends Controller
 {

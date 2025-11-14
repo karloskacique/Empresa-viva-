@@ -1,5 +1,3 @@
-// resources/js/Pages/Ordens/Index.jsx
-
 import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm, usePage, router } from '@inertiajs/react';

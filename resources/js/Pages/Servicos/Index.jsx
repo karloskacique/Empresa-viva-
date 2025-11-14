@@ -1,5 +1,3 @@
-// resources/js/Pages/Servicos/Index.jsx
-
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
@@ -39,7 +37,6 @@ export default function ServicoIndex({ auth, servicos, search }) {
                 },
                 onError: (errors) => {
                     console.error('Erro ao excluir serviço:', errors);
-                    // Você pode adicionar um flash message aqui para o erro
                 },
                 preserveScroll: true,
             });

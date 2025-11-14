@@ -19,9 +19,9 @@ class ServicoController extends Controller
         $servicos = Servico::query()
             ->withoutTrashed()
             ->when($search, function ($query, $search) {
-                $query->where('descricao', 'like', '%' . $search . '%'); // Busca pela 'descricao'
+                $query->where('descricao', 'like', '%' . $search . '%');
             })
-            ->orderBy('descricao') // Ordena pela 'descricao'
+            ->orderBy('descricao')
             ->paginate(10)
             ->withQueryString();
 
@@ -75,7 +75,7 @@ class ServicoController extends Controller
     public function destroy(Servico $servico)
     {
         try {
-            $servico->delete(); // delete() para soft delete
+            $servico->delete();
             return redirect()->route('servicos.index')->with('success', 'Serviço excluído com sucesso!');
         } catch (\Exception $e) {
             return redirect()->route('servicos.index')->with('error', 'Erro ao excluir serviço: ' . $e->getMessage());

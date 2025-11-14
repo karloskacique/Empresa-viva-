@@ -14,7 +14,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        
         $this->call([
             RolesAndPermissionsSeeder::class,
             UserSeeder::class,
@@ -24,10 +23,6 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             OrdemSeeder::class,
-        ]);
-
-        $this->call([
-            OrdemDeServicoSeeder::class,
             PagamentoSeeder::class, 
         ]);
     }

@@ -24,7 +24,7 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'delete clients']);
         Permission::firstOrCreate(['name' => 'create orders']);
 
-        // NOVAS Permissões para Ordens
+        // Permissões para Ordens
         Permission::firstOrCreate(['name' => 'view ordens']);
         Permission::firstOrCreate(['name' => 'create ordens']);
         Permission::firstOrCreate(['name' => 'edit ordens']);

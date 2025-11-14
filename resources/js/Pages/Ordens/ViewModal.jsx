@@ -1,5 +1,3 @@
-// resources/js/Pages/Ordens/ViewModal.jsx
-
 import React from 'react';
 import Modal from '@/Components/Modal';
 import PrimaryButton from '@/Components/PrimaryButton';

@@ -1,5 +1,3 @@
-// resources/js/Pages/Ordens/PaymentModal.jsx
-
 import React from 'react';
 import Modal from '@/Components/Modal';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -21,14 +19,13 @@ export default function PaymentModal({ show, onClose, ordem, formatCurrency }) {
 
     useEffect(() => {
         if (show) {
-            // Preenche o valor padrão com o saldo restante, se houver
             setData(prevData => ({
                 ...prevData,
                 valor: ordem?.saldo_restante > 0 ? ordem.saldo_restante.toFixed(2) : '',
-                data_pagamento: new Date().toISOString().slice(0, 10), // Data atual no formato YYYY-MM-DD
+                data_pagamento: new Date().toISOString().slice(0, 10),
             }));
         } else {
-            reset(); // Reseta o formulário quando o modal fecha
+            reset();
         }
     }, [show, ordem, reset]);
 
@@ -36,8 +33,8 @@ export default function PaymentModal({ show, onClose, ordem, formatCurrency }) {
         e.preventDefault();
         post(route('ordens.storePayment', ordem.id), {
             onSuccess: () => {
-                onClose(); // Fecha o modal ao sucesso
-                reset();   // Reseta o formulário
+                onClose();
+                reset();  
             },
             onError: (formErrors) => {
                 console.error('Erro ao registrar pagamento:', formErrors);
