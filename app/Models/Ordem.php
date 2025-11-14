@@ -43,7 +43,9 @@ class Ordem extends Model
     public function servicos()
     {
         return $this->belongsToMany(Servico::class, 'ordem_de_servicos', 'ordem_id', 'servico_id')
-            ->withTimestamps();
+            ->withTimestamps()
+            ->wherePivotNull('deleted_at')
+            ->withPivot('deleted_at');
     }
 
     // Relacionamento com os pagamentos da ordem

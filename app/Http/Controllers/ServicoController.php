@@ -17,6 +17,7 @@ class ServicoController extends Controller
         $search = $request->input('search');
 
         $servicos = Servico::query()
+            ->withoutTrashed()
             ->when($search, function ($query, $search) {
                 $query->where('descricao', 'like', '%' . $search . '%'); // Busca pela 'descricao'
             })
@@ -79,5 +80,19 @@ class ServicoController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('servicos.index')->with('error', 'Erro ao excluir serviço: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Search for services by description or price.
+     */
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        $servicos = Servico::where('descricao', 'like', "%{$query}%")
+            ->orWhere('valor', 'like', "%{$query}%")
+            ->limit(10)
+            ->get(['id', 'descricao', 'valor']);
+
+        return response()->json($servicos);
     }
 }

@@ -119,4 +119,18 @@ class UserController extends Controller
             return redirect()->route('users.index')->with('error', 'Erro ao excluir usuário: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Search for users by name or email.
+     */
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        $users = User::where('name', 'like', "%{$query}%")
+            ->orWhere('email', 'like', "%{$query}%")
+            ->limit(10)
+            ->get(['id', 'name', 'email']);
+
+        return response()->json($users);
+    }
 }

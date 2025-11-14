@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\ClienteRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class ClienteController extends Controller
 {
@@ -16,6 +17,7 @@ class ClienteController extends Controller
     {
         $search = $request->input('search');
         $clientes = Cliente::query()
+            ->withoutTrashed()
             ->when($search, function ($query, $search) {
                 $query->where('nome', 'like', "%{$search}%")
                       ->orWhere('email', 'like', "%{$search}%")
@@ -114,5 +116,17 @@ class ClienteController extends Controller
         }
 
         return redirect()->route('clientes.index')->with('error', 'Erro ao excluir cliente.');
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        $clientes = Cliente::where('nome', 'like', "%{$query}%")
+            ->orWhere('email', 'like', "%{$query}%")
+            ->orWhere('cpf', 'like', "%{$query}%")
+            ->limit(10)
+            ->get(['id', 'nome', 'email']);
+
+        return response()->json($clientes);
     }
 }

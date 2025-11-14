@@ -2,18 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\Ordem;
 use App\Models\Cliente;
 use App\Models\Servico;
 use App\Models\Pagamento;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class OrdemController extends Controller
 {
+    private $availableStatuses = ['Iniciado', 'Em Andamento', 'Concluído', 'Cancelado', 'Aguardando Pagamento'];
     public function __construct()
     {
         $this->middleware('auth');
@@ -30,18 +33,20 @@ class OrdemController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $statusFilter = $request->input('status');
-
+        $statusFilter = $request->input('statusFilter');
         $ordens = Ordem::query()
             ->with(['cliente', 'user', 'pagamentos'])
+            ->withoutTrashed()
             ->when($search, function ($query, $search) {
-                $query->where('id', 'like', '%' . $search . '%')
-                      ->orWhereHas('cliente', function ($q) use ($search) {
-                          $q->where('nome', 'like', '%' . $search . '%');
+                $query->where(function ($q) use ($search) {
+                    $q->where('id', 'like', '%' . $search . '%')
+                      ->orWhereHas('cliente', function ($subQuery) use ($search) {
+                          $subQuery->where('nome', 'like', '%' . $search . '%');
                       })
-                      ->orWhereHas('user', function ($q) use ($search) {
-                          $q->where('name', 'like', '%' . $search . '%');
+                      ->orWhereHas('user', function ($subQuery) use ($search) {
+                          $subQuery->where('name', 'like', '%' . $search . '%');
                       });
+                });
             })
             ->when($statusFilter && $statusFilter !== 'all', function ($query, $statusFilter) {
                 $query->where('status', $statusFilter);
@@ -54,7 +59,7 @@ class OrdemController extends Controller
             'ordens' => $ordens,
             'search' => $search,
             'statusFilter' => $statusFilter,
-            'availableStatuses' => ['Iniciado', 'Em Andamento', 'Concluído', 'Cancelado', 'Aguardando Pagamento'],
+            'availableStatuses' => $this->availableStatuses
         ]);
     }
 
@@ -63,13 +68,8 @@ class OrdemController extends Controller
      */
     public function create()
     {
-        $clientes = Cliente::all(['id', 'nome']);
-        $servicos = Servico::all(['id', 'nome', 'preco']);
-
         return Inertia::render('Ordens/CreateEdit', [
-            'clientes' => $clientes,
-            'servicos' => $servicos,
-            'availableStatuses' => ['Iniciado', 'Em Andamento', 'Concluído', 'Cancelado', 'Aguardando Pagamento'],
+            'availableStatuses' => $this->availableStatuses,
         ]);
     }
 
@@ -78,45 +78,63 @@ class OrdemController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'cliente_id' => 'required|exists:clientes,id',
-            'servicos' => 'required|array|min:1',
-            'servicos.*' => 'exists:servicos,id',
-            'data' => 'nullable|date',
-            'status' => 'required|string|max:20',
-        ]);
-
-        DB::beginTransaction();
+        $servicosData = $request->input('servicos', []);
+    
+        $servicosIds = collect($servicosData)->map(function ($servico) {
+            return is_array($servico) && isset($servico['id']) ? $servico['id'] : $servico;
+        })
+        ->filter()
+        ->toArray();
         try {
-            $servicosSelecionados = Servico::whereIn('id', $request->servicos)->get();
-            $total = $servicosSelecionados->sum('preco');
+            $request->validate([
+                'cliente_id' => 'required|exists:clientes,id',
+                'user_id' => 'required|exists:users,id',
+                'servicos' => 'required|array|min:1',
+                // 'servicos.*' => 'exists:servicos,id',
+                'data' => 'nullable|date',
+                'status' => 'required|string|max:20',
+            ]);
+
+            DB::beginTransaction();
+            $servicosSelecionados = Servico::whereIn('id', $servicosIds)->get();
+            $total = $servicosSelecionados->sum('valor');
 
             $ordem = Ordem::create([
-                'user_id' => auth()->id(),
+                'user_id' => $request->user_id,
                 'cliente_id' => $request->cliente_id,
                 'total' => $total,
                 'data' => $request->data ?? Carbon::now(),
                 'status' => $request->status,
             ]);
 
-            $ordem->servicos()->sync($request->servicos);
+            $ordem->servicos()->attach($servicosIds);
 
             DB::commit();
             return redirect()->route('ordens.index')->with('success', 'Ordem de serviço criada com sucesso!');
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Erro ao criar ordem de serviço: ' . $e->getMessage());
+            Log::error('Erro ao criar ordem de serviço: ' . $e->getMessage(), ['exception' => $e]);
+            return redirect()->back()
+                ->with('error', 'Ocorreu um erro ao criar a ordem de serviço: ' . $e->getMessage())
+                ->withInput();
         }
     }
 
     /**
      * Display the specified resource (para a modal de visualização).
      */
-    public function show(Ordem $ordem)
+    public function show($ordemId)
     {
-       
-        $ordem->load(['cliente', 'user', 'servicos', 'pagamentos']);
-
+        $ordem = Ordem::query()
+            ->with(['cliente', 'user', 'pagamentos', 'servicos'])
+            ->withoutTrashed()
+            ->where('id', $ordemId)
+            ->firstOrFail();
        
         $ordem->append(['total_pago', 'saldo_restante', 'status_color']);
 
@@ -126,49 +144,63 @@ class OrdemController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Ordem $ordem)
+    public function edit($ordemId)
     {
-        $clientes = Cliente::all(['id', 'nome']);
-        $servicos = Servico::all(['id', 'nome', 'preco']);
-        $ordem->load('servicos');
+        $ordem = Ordem::query()
+            ->with(['cliente', 'user', 'pagamentos', 'servicos'])
+            ->withoutTrashed()
+            ->where('id', $ordemId)
+            ->firstOrFail();
 
-       
         $ordem->append(['total_pago', 'saldo_restante', 'status_color']);
 
         return Inertia::render('Ordens/CreateEdit', [
             'ordem' => $ordem,
-            'clientes' => $clientes,
-            'servicos' => $servicos,
-            'availableStatuses' => ['Iniciado', 'Em Andamento', 'Concluído', 'Cancelado', 'Aguardando Pagamento'],
+            'availableStatuses' => $this->availableStatuses,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Ordem $ordem)
+    public function update(Request $request, $ordemId)
     {
+        $ordem = Ordem::query()
+            ->withoutTrashed()
+            ->where('id', $ordemId)
+            ->firstOrFail();
+
+        $servicosData = $request->input('servicos', []);
+    
+        $servicosIds = collect($servicosData)->map(function ($servico) {
+            return is_array($servico) && isset($servico['id']) ? $servico['id'] : $servico;
+        })
+        ->filter()
+        ->toArray();
+
         $request->validate([
             'cliente_id' => 'required|exists:clientes,id',
+            'user_id' => 'required|exists:users,id',
             'servicos' => 'required|array|min:1',
-            'servicos.*' => 'exists:servicos,id',
+            // 'servicos.*' => 'exists:servicos,id',
             'data' => 'nullable|date',
             'status' => 'required|string|max:20',
         ]);
 
         DB::beginTransaction();
         try {
-            $servicosSelecionados = Servico::whereIn('id', $request->servicos)->get();
-            $total = $servicosSelecionados->sum('preco');
+            $servicosSelecionados = Servico::whereIn('id', $servicosIds)->get();
+            $total = $servicosSelecionados->sum('valor');
 
             $ordem->update([
+                'user_id' => $request->user_id,
                 'cliente_id' => $request->cliente_id,
                 'total' => $total,
                 'data' => $request->data ?? Carbon::now(),
                 'status' => $request->status,
             ]);
 
-            $ordem->servicos()->sync($request->servicos);
+            $ordem->servicos()->sync($servicosIds);
 
             DB::commit();
             return redirect()->route('ordens.index')->with('success', 'Ordem de serviço atualizada com sucesso!');
@@ -181,9 +213,12 @@ class OrdemController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Ordem $ordem)
+    public function destroy($ordemId)
     {
         try {
+            $ordem = Ordem::query()
+                ->where('id', $ordemId)
+                ->firstOrFail();
             $ordem->delete();
             return redirect()->route('ordens.index')->with('success', 'Ordem de serviço excluída com sucesso!');
         } catch (\Exception $e) {

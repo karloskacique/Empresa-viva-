@@ -2,18 +2,17 @@
 
 import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, useForm, usePage, router } from '@inertiajs/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faEdit, faTrash, faEye, faMoneyBillWave, faSearch, faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
 import DangerButton from '@/Components/DangerButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import SelectInput from '@/Components/SelectInput'; // Precisaremos deste para o filtro de status
+import SelectInput from '@/Components/SelectInput';
 import Modal from '@/Components/Modal';
-import { router } from '@inertiajs/react';
-import ViewOrdemModal from './ViewModal'; // Novo componente para visualização
-import PaymentModal from './PaymentModal'; // Novo componente para pagamento
+import ViewOrdemModal from './ViewModal';
+import PaymentModal from './PaymentModal';
 
 export default function OrdemIndex({ auth, ordens, search, statusFilter, availableStatuses }) {
     const { flash } = usePage().props;
@@ -21,13 +20,20 @@ export default function OrdemIndex({ auth, ordens, search, statusFilter, availab
     const [expandedRow, setExpandedRow] = useState(null);
     const [confirmingDeletion, setConfirmingDeletion] = useState(false);
     const [ordemToDelete, setOrdemToDelete] = useState(null);
-    const [viewingOrdem, setViewingOrdem] = useState(null); // Estado para a ordem a ser visualizada
-    const [payingOrdem, setPayingOrdem] = useState(null); // Estado para a ordem a ser paga
+    const [viewingOrdem, setViewingOrdem] = useState(null);
+    const [payingOrdem, setPayingOrdem] = useState(null);
 
     const { data, setData, processing, get } = useForm({
-        search: search || '',
+        search: search,
         statusFilter: statusFilter || 'all',
     });
+
+    useEffect(() => {
+        setData({
+            search: search || '',
+            statusFilter: statusFilter || 'all',
+        });
+    }, [search, statusFilter]);
 
     const toggleRow = (id) => {
         setExpandedRow(expandedRow === id ? null : id);
@@ -56,13 +62,13 @@ export default function OrdemIndex({ auth, ordens, search, statusFilter, availab
     const closeModal = () => {
         setConfirmingDeletion(false);
         setOrdemToDelete(null);
-        setViewingOrdem(null); // Fechar modal de visualização
-        setPayingOrdem(null); // Fechar modal de pagamento
+        setViewingOrdem(null);
+        setPayingOrdem(null);
     };
 
     const handleSearch = (e) => {
         e.preventDefault();
-        get(route('ordens.index'), { search: data.search, statusFilter: data.statusFilter }, {
+        router.get(route('ordens.index'), { search: data.search, statusFilter: data.statusFilter }, {
             preserveState: true,
             replace: true,
             preserveScroll: true,
@@ -72,7 +78,7 @@ export default function OrdemIndex({ auth, ordens, search, statusFilter, availab
     const handleClearSearch = () => {
         setData('search', '');
         setData('statusFilter', 'all');
-        get(route('ordens.index'), { search: '', statusFilter: 'all' }, {
+        router.get(route('ordens.index'), { search: '', statusFilter: 'all' }, {
             preserveState: true,
             replace: true,
             preserveScroll: true,
@@ -80,17 +86,18 @@ export default function OrdemIndex({ auth, ordens, search, statusFilter, availab
     };
 
     const handleStatusFilterChange = (e) => {
-        setData('statusFilter', e.target.value);
-        get(route('ordens.index'), { search: data.search, statusFilter: e.target.value }, {
+        const newStatus = e.target.value;
+        setData('statusFilter', newStatus);
+
+        router.get(route('ordens.index'), { search: data.search, statusFilter: newStatus }, {
             preserveState: true,
             replace: true,
             preserveScroll: true,
         });
     };
 
-    const viewOrdemDetails = (ordemId) => {
-        // Fetch the full order details via AJAX for the modal
-        axios.get(route('ordens.show', ordemId))
+    const viewOrdemDetails = async (ordemId) => {
+        await axios.get(route('ordens.show', ordemId))
             .then(response => {
                 setViewingOrdem(response.data);
             })
@@ -103,9 +110,7 @@ export default function OrdemIndex({ auth, ordens, search, statusFilter, availab
     const handlePayOrdem = (ordem) => {
         setPayingOrdem(ordem);
     };
-
-
-    // Objeto para mapear status a classes de cor Tailwind (Dark/Light mode)
+   
     const statusColorClasses = {
         Iniciado: 'bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100',
         'Em Andamento': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100',
@@ -114,8 +119,7 @@ export default function OrdemIndex({ auth, ordens, search, statusFilter, availab
         'Aguardando Pagamento': 'bg-orange-100 text-orange-800 dark:bg-orange-800 dark:text-orange-100',
         default: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100',
     };
-
-    // Função para formatar moeda
+   
     const formatCurrency = (value) => {
         return new Intl.NumberFormat('pt-BR', {
             style: 'currency',

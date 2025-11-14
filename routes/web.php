@@ -21,11 +21,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // nao mudar ordem
+    Route::get('clientes/search', [ClienteController::class, 'search'])->name('clientes.search');
+    Route::get('servicos/search', [ServicoController::class, 'search'])->name('servicos.search');
+    Route::get('users/search', [UserController::class, 'search'])->name('users.search');
+    Route::post('ordens/{ordem}/pay', [OrdemController::class, 'storePayment'])->name('ordens.storePayment');
+
     Route::resource('clientes', ClienteController::class);
     Route::resource('servicos', ServicoController::class);
     Route::resource('ordens', OrdemController::class);
     Route::resource('users', UserController::class);
-    Route::post('ordens/{ordem}/pay', [OrdemController::class, 'storePayment'])->name('ordens.storePayment');
 });
 
 require __DIR__.'/auth.php';

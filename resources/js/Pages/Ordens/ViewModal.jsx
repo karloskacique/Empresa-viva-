@@ -28,7 +28,10 @@ export default function ViewOrdemModal({ show, onClose, ordem, formatCurrency, s
                         <p className="mb-2">{ordem.user?.name || 'N/A'}</p>
 
                         <p className="font-semibold text-gray-700 dark:text-gray-300">Data da Ordem:</p>
-                        <p className="mb-2">{new Date(ordem.data).toLocaleString()}</p>
+                        <p className="mb-2">{ordem.data 
+                            ? new Date(ordem.data).toLocaleString() 
+                            : 'N/A'
+                        }</p>
 
                         <p className="font-semibold text-gray-700 dark:text-gray-300">Status:</p>
                         <p className="mb-2">
@@ -39,7 +42,7 @@ export default function ViewOrdemModal({ show, onClose, ordem, formatCurrency, s
                     </div>
                     <div>
                         <p className="font-semibold text-gray-700 dark:text-gray-300">Valor Total:</p>
-                        <p className="mb-2">{formatCurrency(ordem.total)}</p>
+                        <p className="mb-2">{formatCurrency(ordem.total || 0)}</p>
 
                         <p className="font-semibold text-gray-700 dark:text-gray-300">Total Pago:</p>
                         <p className="mb-2">{formatCurrency(ordem.total_pago || 0)}</p>
@@ -57,7 +60,7 @@ export default function ViewOrdemModal({ show, onClose, ordem, formatCurrency, s
                         <ul className="list-disc list-inside space-y-1">
                             {ordem.servicos.map(servico => (
                                 <li key={servico.id}>
-                                    {servico.nome} - {formatCurrency(servico.preco)}
+                                    {servico.descricao} - {formatCurrency(servico.valor || 0)}
                                 </li>
                             ))}
                         </ul>
