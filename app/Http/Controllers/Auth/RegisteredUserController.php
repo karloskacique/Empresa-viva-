@@ -41,6 +41,8 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+        // ajustar para produção se for
+        $user->assignRole('admin');
 
         event(new Registered($user));
 

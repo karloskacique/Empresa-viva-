@@ -22,7 +22,6 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'view dashboard']);
         Permission::firstOrCreate(['name' => 'edit clients']);
         Permission::firstOrCreate(['name' => 'delete clients']);
-        Permission::firstOrCreate(['name' => 'create orders']);
 
         // Permissões para Ordens
         Permission::firstOrCreate(['name' => 'view ordens']);
@@ -36,8 +35,13 @@ class RolesAndPermissionsSeeder extends Seeder
         $adminRole->givePermissionTo(Permission::all());
 
         // Role 'user'
-        $userRole = Role::firstOrCreate(['name' => 'user']);
-        $userRole->givePermissionTo('view dashboard');
+        // $userRole = Role::firstOrCreate(['name' => 'user']);
+        // $userRole->givePermissionTo(Permission::all());
+        // $userRole->givePermissionTo('view dashboard');
+        // $userRole->givePermissionTo('manage clients');
+        // $userRole->givePermissionTo('manage services');
+        // $userRole->givePermissionTo('view ordens');
+        // $userRole->givePermissionTo('view dashboard');
         // Adicione permissões específicas para a role 'user' se necessário
         // $userRole->givePermissionTo(['edit own profile', 'view own orders']);
     }
