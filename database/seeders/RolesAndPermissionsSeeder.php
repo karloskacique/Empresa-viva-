@@ -35,7 +35,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $adminRole->givePermissionTo(Permission::all());
 
         // Role 'user'
-        // $userRole = Role::firstOrCreate(['name' => 'user']);
+        $userRole = Role::firstOrCreate(['name' => 'user']);
         // $userRole->givePermissionTo(Permission::all());
         // $userRole->givePermissionTo('view dashboard');
         // $userRole->givePermissionTo('manage clients');
